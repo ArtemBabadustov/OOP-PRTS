@@ -1,0 +1,25 @@
+4C41A400004B3F91BCD8
+00000001
+
+3.14 in float
+01000000010010001111010111000011
+ID 5, 3.14 in float
+0000010101000000010010001111010111000011
+
+kHeading
+kPitch
+kRoll
+kHeadingStatus
+kQuaternion
+kTemperature
+kDistortion
+kCalStatus
+kAccelX
+kAccelY
+kAccelZ
+kMagX
+kMagY
+kMagZ
+kGyroX
+kGyroY
+kGyroZ
