@@ -12,4 +12,73 @@ incert
 5
 print
 
+delete_member test:
+back 
+1
+back
+2
+back
+3
+print
+delete
+3
+print
+delete
+1
+
+split test:
+back 
+1
+back
+2
+back
+3
+back
+4
+back
+5
+back
+6
+back
+7
+back
+8
+print
+sort
+delete
+8
+print
+sort
+
+test of sort:
+back
+7
+back
+2
+back
+5
+back
+3
+back
+4
+back
+-1
+back
+100
+print
+sort
+
+test of sort 2:
+back 
+1
+back
+-1
+back
+2
+back
+-2
+back
+3
+print
+sort
 
