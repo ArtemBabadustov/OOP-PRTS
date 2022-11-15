@@ -373,6 +373,7 @@ void Print_commands()
     cout << "delete - delete member of a list on the position you enter" << endl;
     cout << "delete_list - delete the whole list" << endl;
     cout << "swap - swap two elements in the list" << endl;
+    cout << "fill - fills the list with alternating positive and negative numbers";
     cout << "integrity_ckeck" << endl;
     cout << endl;
 }
@@ -464,11 +465,11 @@ int main()
             cout << endl;
             for (int i = 0; i < temp1/2; i++)
             {
-                    test->pushback(2);
+                    test->pushback(i);
             }
             for (int i = temp1 / 2; i < temp1; i++)
             {
-                test->pushback(1);
+                test->pushback(-i);
             }
            
         }
