@@ -70,12 +70,17 @@ public:
         }
         list* incerted = new list;
         list* temp = this->find(pos);
-        incerted->previous = temp->previous;
-        incerted->next = temp;
-        incerted->content = c;
-        temp->previous = incerted;
-        temp = incerted->previous;
-        temp->next = incerted;
+        if (temp != 0)
+        {
+            incerted->previous = temp->previous;
+            incerted->next = temp;
+            incerted->content = c;
+            temp->previous = incerted;
+            temp = incerted->previous;
+            temp->next = incerted;
+        }
+        else
+            return;
     }
     void delete_member (int n)
     {
@@ -343,7 +348,7 @@ protected:
             }
             else
             {
-                cout << "Error! There is only " << i + 1 << " elements in this list!";
+                cout << "Error! There is only " << i + 1 << " elements in this list!" << endl;
                 return 0;
             }
         }
