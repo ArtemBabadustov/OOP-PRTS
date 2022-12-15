@@ -2,7 +2,8 @@
 #include <string>
 
 using namespace std;
-
+//Необходимо продумать консистентность типов при заполнении списка, а также при сортировке
+template <typename T>
 class list
 {
 public:
@@ -22,12 +23,16 @@ public:
         }
            // cout << "deleted a member of a list" << endl;
     }
-    void pushback(int p)
+    
+    void pushback(T p)
     {
         list* temp = this;
-        if (temp->content == 0)
+        if (temp->next == 0)
         {
             temp->content = p;
+            temp->next = new list <T>; // надо подумать, с каким типом создается новый элемент
+            temp->next->content = 0;
+            temp->next->previous = temp;
         }
         else
         {
@@ -40,28 +45,27 @@ public:
             temp->next->content = p;
         }
     }
-    void pushfront(int n)
+    void pushfront(T n)
     {
-        list* new_second = new list;
-        if (this->next != 0)
+        //list* new_second = new list;
+        if (this->next == 0)
         {
-            this->next->previous = new_second;
-        }
-        if (this->content != 0)
-        {
-           // list* new_second = new list;
-            new_second->previous = this;
-            new_second->content = this->content;
-            new_second->next = this->next;
-            this->next = new_second;
             this->content = n;
+            this->next = new list <T>;
+            this->next->previous = this;
         }
         else
         {
+            list* new_second = new list;
+            new_second->content = this->content;
+            new_second->next = this->next;
+            new_second->previous = this;
+            this->next->previous = new_second;
             this->content = n;
+            this->next = new_second;
         }
     }
-    void incert(int pos, int c)
+    void incert(int pos, T c)
     {
         if (pos == 0)
         {
@@ -283,18 +287,19 @@ public:
         cout << temp->content << endl;
     }
     void swap(int a, int b)
-    {        
+    {
         int i = 0;
+        T temp = 0;
         if (a == b)
         {
             return;
         }
         else if (a > b)
         {
-            i = a;
+            temp = a;
             a = b;
-            b = i;
-            i = 0;
+            b = temp;
+            temp = 0;
         }
         list* temp1 = this;
         list* temp2 = 0;
@@ -325,12 +330,135 @@ public:
                     return;
                 }
             }
-            i = temp1->content;
+            temp = temp1->content;
             temp1->content = temp2->content;
             temp2->content = i;
             return;
     }
+    string user_interface()
+    {
+        string command;
+        T temp_t = 0;
+        int temp_int = 0;
+        int temp_int_2 = 0;
+        list* test = this;
+        Print_commands();
+        while (command != "exit")
+        {
+            cout << "enter command";
+            cout << endl;
+            cin >> command;
+            cout << endl;
+            if (command == "--help")
+            {
+                Print_commands();
+            }
+            if (command == "front")
+            {
+                cout << "enter a number" << endl;
+                cin >> temp_t;
+                cout << endl;
+                test->pushfront(temp_t);
+            }
+            if (command == "back")
+            {
+                cout << "enter a number" << endl;
+                cin >> temp_t;
+                cout << endl;
+                test->pushback(temp_t);
+            }
+            if (command == "incert")
+            {
+                cout << "enter a position" << endl;
+                cin >> temp_int;
+                cout << endl;
+                cout << "enter a number" << endl;
+                cin >> temp_t;
+                cout << endl;
+                test->incert(temp_int - 1, temp_t);
+            }
+            if (command == "get")
+            {
+                cout << "enter a position" << endl;
+                cin >> temp_int;
+                cout << endl;
+                test->get(temp_int);
+            }
+            if (command == "print")
+            {
+                test->printlist();
+            }
+            if (command == "delete")
+            {
+                cout << "enter a position" << endl;
+                cin >> temp_int;
+                cout << endl;
+                test->delete_member(temp_int - 1);
+            }
+            if (command == "delete_list")
+            {
+                delete test;
+                return "new list";
+            }
+            if (command == "sort")
+            {
+                test = test->sort();
+            }
+            if (command == "integrity_check")
+            {
+                test->printlist();
+                test->integrity_check();
+            }
+            if (command == "swap")
+            {
+                cout << "enter first member of the list" << endl;
+                cin >> temp_int;
+                cout << endl << "enter second member of the list" << endl;
+                cin >> temp_int_2;
+                cout << endl;
+                test->swap(temp_int - 1, temp_int_2 - 1);
+            }
+            if (command == "fill")
+            {
+                cout << "enter an ammound" << endl;
+                cin >> temp_int;
+                cout << endl;
+                for (T i = 0.0; i < temp_int / 2; i++)
+                {
+                    test->pushback(i/2);
+                }
+                for (T i = (T)temp_int / 2; i < temp_int; i++)
+                {
+                    test->pushback(-i/2);
+                }
+
+            }
+            if (command == "empty")
+            {
+                delete test;
+                test = new list;
+            }
+        }
+        return "exit";
+    }
 protected:
+    void Print_commands()
+    {
+        cout << "List of eveliable commands: " << endl;
+        cout << "--help - view list of eveliable commands" << endl;
+        cout << "exit - close the program" << endl;
+        cout << "front - pushfront" << endl;
+        cout << "back - pushback" << endl;
+        cout << "incert - incert a new member in front of the enterd position" << endl;
+        cout << "get - print a number, contained on the position you enter" << endl;
+        cout << "print - print the whole list" << endl;
+        cout << "delete - delete member of a list on the position you enter" << endl;
+        cout << "delete_list - delete the whole list" << endl;
+        cout << "swap - swap two elements in the list" << endl;
+        cout << "fill - fills the list with alternating positive and negative numbers";
+        cout << "integrity_ckeck" << endl;
+        cout << endl;
+    }
     list* find(const int n)
     {
         if (this->next == 0 || n == 0)
@@ -361,128 +489,62 @@ protected:
             return temp;
         }
     }
-    int content = 0;
+    T content;
     list* next = 0;
     list* previous = 0;
 };
-void Print_commands()
-{
-    cout << "List of eveliable commands: " << endl;
-    cout << "--help - view list of eveliable commands" << endl;
-    cout << "exit - close the program" << endl;
-    cout << "front - pushfront" << endl;
-    cout << "back - pushback" << endl;
-    cout << "incert - incert a new member in front of the enterd position" << endl;
-    cout << "get - print a number, contained on the position you enter" << endl;
-    cout << "print - print the whole list" << endl;
-    cout << "delete - delete member of a list on the position you enter" << endl;
-    cout << "delete_list - delete the whole list" << endl;
-    cout << "swap - swap two elements in the list" << endl;
-    cout << "fill - fills the list with alternating positive and negative numbers";
-    cout << "integrity_ckeck" << endl;
-    cout << endl;
-}
+
 int main()
 {
-    string command;
-    int temp1;
-    int temp2;
-    list* test =  new list;
-    Print_commands();
-    while (command != "exit")
+    string type;
+    bool type_is_entr_correctly = false;
+    while (!type_is_entr_correctly)
     {
-        cout << "enter command";
+        cout << "enter type of a list" << endl;
+        cin >> type;
         cout << endl;
-        cin >> command;
-        cout << endl;
-        if (command == "--help")
+        if (type == "float")
         {
-            Print_commands();
-        }
-        if (command == "front")
-        {
-            cout << "enter a number" << endl;
-            cin >> temp1;
-            cout << endl;
-            test->pushfront(temp1);
-        }
-        if (command == "back")
-        {
-            cout << "enter a number" << endl;
-            cin >> temp1;
-            cout << endl;
-            test->pushback(temp1);
-        }
-        if (command == "incert")
-        {
-            cout << "enter a position" << endl;
-            cin >> temp1;
-            cout << endl;
-            cout << "enter a number" << endl;
-            cin >> temp2;
-            cout << endl;
-            test->incert(temp1 - 1, temp2); 
-        }
-        if (command == "get")
-        {
-            cout << "enter a position" << endl;
-            cin >> temp1;
-            cout << endl;
-            test->get(temp1);
-        }
-        if (command == "print")
-        {
-            test->printlist();
-        }
-        if (command == "delete")
-        {
-            cout << "enter a position" << endl;
-            cin >> temp1;
-            cout << endl;
-            test->delete_member(temp1 - 1);
-        }
-        if (command == "delete_list")
-        {
-            delete test;
-        }
-        if (command == "sort")
-        {
-            test = test->sort();
-        }
-        if (command == "integrity_check")
-        {
-            test->printlist();
-            test->integrity_check();
-        }
-        if (command == "swap")
-        {
-            cout << "enter first member of the list" << endl;
-            cin >> temp1;
-            cout << endl << "enter second member of the list" << endl;
-            cin >> temp2;
-            cout << endl;
-            test->swap(temp1 - 1, temp2 - 1);
-        }
-        if (command == "fill")
-        {
-            cout << "enter an ammound" << endl;
-            cin >> temp1;
-            cout << endl;
-            for (int i = 0; i < temp1/2; i++)
+            list<float>* test_list = new list <float>;
+            //type_is_entr_correctly = true;
+            string interface_ret = test_list->user_interface();
+            if (interface_ret == "exit")
             {
-                    test->pushback(i);
+                return 0;
             }
-            for (int i = temp1 / 2; i < temp1; i++)
+            else if (interface_ret == "new list")
             {
-                test->pushback(-i);
+
             }
-           
+            else
+            {
+                cout << "Unexpected error happened in user interface!" << endl;
+                return 1;
+            }
         }
-        if (command == "empty")
+        else if (type == "int")
         {
-            delete test;
-            test = new list;
+            list<int>* test_list = new list <int>;
+            //type_is_entr_correctly = true;
+            string interface_ret = test_list->user_interface();
+            if (interface_ret == "exit")
+            {
+                return 0;
+            }
+            else if (interface_ret == "new list")
+            {
+
+            }
+            else
+            {
+                cout << "Unexpected error happened in user interface!" << endl;
+                return 1;
+            }
+        }
+        else
+        {
+            cout << "Apperently you have entered an unsupported type!" << endl;
         }
     }
-    return 0;
 }
+    
