@@ -29,6 +29,8 @@ struct point
     point operator - (point* other) const;
    
     void operator = (const point* other);
+
+    int get_coordinate(std::string coordinate);
    
 private:
     int x;
@@ -37,14 +39,20 @@ private:
 };
 class Mission
 {
-
+public:
+    Mission();
+    virtual std::string who_are_you();
+    virtual point get_end_point() const;
 protected:
 
     point start;
     point end;
     std::string name = "Not assigned!";
 };
-class Dive : Mission
+class Dive : public Mission
 {
+public:
     Dive(point n_start, int delta_z);
+    virtual std::string who_are_you() override;
+    //point get_end_point() const;
 };
