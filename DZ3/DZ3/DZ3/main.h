@@ -51,8 +51,35 @@ protected:
 };
 class Dive : public Mission
 {
+    std::string type_of_descend;
+    std::string type_of_depth_definition;
+    int radius;
+    void get_depth(point n_depth);
 public:
-    Dive(point n_start, int delta_z);
+    Dive(point n_start); 
     virtual std::string who_are_you() override;
     //point get_end_point() const;
+};
+
+class Lift : public Mission
+{
+    std::string type_of_descend;
+    std::string type_of_depth_definition;
+    int radius;
+    void get_depth(point n_depth);
+public:
+    Lift(point n_start);
+    virtual std::string who_are_you() override;
+    //point get_end_point() const;
+};
+
+class Move : public Mission
+{
+    std::string type_of_exit;
+    std::string type_of_depth_maint;
+    int tolerance = 0;
+    point start;
+    point end;
+public: 
+    Move(point n_start); 
 };
