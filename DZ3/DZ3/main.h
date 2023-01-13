@@ -43,8 +43,9 @@ public:
     Mission();
     virtual std::string who_are_you();
     virtual point get_end_point() const;
+    
 protected:
-
+    void get_int(int& input);
     point start;
     point end;
     std::string name = "Not assigned!";
@@ -79,9 +80,15 @@ class Move : public Mission
     std::string type_of_depth_maint; // depth or sea_floor
     int tolerance = 0;
     int depth = 0;
-    point start;
-    point end;
 public: 
     Move(point n_start);
+    virtual std::string who_are_you() override;
+};
+
+class Return : public Mission
+{
+    
+public:
+    Return(point n_start);
     virtual std::string who_are_you() override;
 };

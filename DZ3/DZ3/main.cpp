@@ -91,6 +91,29 @@ point Mission::get_end_point() const
 {
 	return this->end;
 }
+void Mission::get_int(int& input)
+{
+	string temp;
+	cin >> temp;
+	bool is_number = false;
+	while (is_number != true)
+	{
+		is_number = true;
+		try 
+		{
+			input = stoi(temp);
+		}
+		catch (const std::invalid_argument&)
+		{
+			is_number = false;
+			cout << "You have entered an invalid number!" << endl
+				<< "Please enter it again:" << endl;
+			cin >> temp;
+			cout << endl;
+		}
+	}
+}
+
 void Dive::get_depth(point n_start)
 {
 	string type_of_depth_def = "";
@@ -113,7 +136,7 @@ void Dive::get_depth(point n_start)
 	this->type_of_depth_definition = type_of_depth_def;
 	int depth = 10;
 	cout << "please enter desired depth" << endl;
-	cin >> depth;
+	this->get_int(depth);
 	cout << endl;
 	while (depth > max_y || depth < min_y || depth > n_start.get_coordinate("y"))
 	{
@@ -122,7 +145,7 @@ void Dive::get_depth(point n_start)
 			cout << "You have entered depth that lies outside of the working area!" << endl
 				<< "Operational depth lies between" << min_y << " and " << max_y << "meters." << endl
 				<< "Please enter desired depth again" << endl;
-			cin >> depth;
+			this->get_int(depth);
 			cout << endl;
 		}
 		if (depth > n_start.get_coordinate("y"))
@@ -130,7 +153,7 @@ void Dive::get_depth(point n_start)
 			cout << "Depth you have entered is higher than the current one!" << endl
 				<< "Current depth is: " << n_start.get_coordinate("y") << "meters." << endl
 				<< "Please enter depth lower than the one listed above" << endl;
-			cin >> depth;
+			this->get_int(depth);
 			cout << endl;
 		}
 	}
@@ -165,7 +188,7 @@ Dive::Dive(point n_start)
 	else
 	{
 		cout << "Please enter desired spiral radius" << endl;
-		cin >> radius;
+		this->get_int(radius);
 		while (n_start.get_coordinate("x") + sqrt(radius) > max_x
 			|| n_start.get_coordinate("x") + sqrt(radius) < min_x
 			|| n_start.get_coordinate("z") + sqrt(radius) > max_z
@@ -173,7 +196,7 @@ Dive::Dive(point n_start)
 		{
 			cout << "With the radius you have entered AUV will go out of it's operational zone!"
 				<< endl << "Please enter a smaller radius:" << endl;
-			cin >> radius;
+			this->get_int(radius);
 			cout << endl;
 		}
 	}
@@ -224,7 +247,7 @@ void Lift::get_depth(point n_start)
 	this->type_of_depth_definition = type_of_depth_def;
 	int depth = 10;
 	cout << "please enter desired depth" << endl;
-	cin >> depth;
+	this->get_int(depth);
 	cout << endl;
 	while (depth > max_y || depth < min_y || depth > n_start.get_coordinate("y"))
 	{
@@ -233,7 +256,7 @@ void Lift::get_depth(point n_start)
 			cout << "You have entered depth that lies outside of the working area!" << endl
 				<< "Operational depth lies between" << min_y << " and " << max_y << "meters." << endl
 				<< "Please enter desired depth again" << endl;
-			cin >> depth;
+			this->get_int(depth);
 			cout << endl;
 		}
 		if (depth < n_start.get_coordinate("y"))
@@ -241,7 +264,7 @@ void Lift::get_depth(point n_start)
 			cout << "Depth you have entered is lower than the current one!" << endl
 				<< "Current depth is: " << n_start.get_coordinate("y") << "meters." << endl
 				<< "Please enter depth higher than the one listed above" << endl;
-			cin >> depth;
+			this->get_int(depth);
 			cout << endl;
 		}
 	}
@@ -275,7 +298,7 @@ Lift::Lift(point n_start)
 	else
 	{
 		cout << "Please enter desired spiral radius" << endl;
-		cin >> radius;
+		this->get_int(radius);
 		while (n_start.get_coordinate("x") + sqrt(radius) > max_x
 			|| n_start.get_coordinate("x") + sqrt(radius) < min_x
 			|| n_start.get_coordinate("z") + sqrt(radius) > max_z
@@ -283,7 +306,7 @@ Lift::Lift(point n_start)
 		{
 			cout << "With the radius you have entered AUV will go out of it's operational zone!"
 				<< endl << "Please enter a smaller radius:" << endl;
-			cin >> radius;
+			this->get_int(radius);
 			cout << endl;
 		}
 	}
@@ -349,15 +372,21 @@ Move::Move(point n_start)
 	type_of_depth_maint.shrink_to_fit();
 	int x = 0, y = 0, z = 0;
 	cout << "Please enter coordinates of a target point. Format of input is x y z." << endl;
-	cin >> x >> y >> z;
+	this->get_int(x);
+	this->get_int(y);
+	this->get_int(z);
 	cout << endl;
 	while (min_x > x || x > max_x || min_y > y || max_y < y || min_z > z || max_z < z)
 	{
 		cout << "Point you have entered lies outside of an operating area!" << endl
 			<< " Please enter coordinates of a target point again. Format of input is x y z." << endl;
-		cin >> x >> y >> z;
+		this->get_int(x);
+		this->get_int(y);
+		this->get_int(z);
 		cout << endl;
 	}
+	cout << "Please enter a dead zone radius around target point:" << endl;
+	this->get_int(tolerance);
 	this->end = point(x, y, z);
 }
 string Move::who_are_you()
@@ -388,6 +417,15 @@ string Move::who_are_you()
 	return answer;
 }
 
+Return::Return(point n_start)
+{
+	end = point(0, 0, 0);
+	start = n_start;
+}
+string Return::who_are_you()
+{
+	return "Return to the start point.";
+}
 
 ofstream fout;
 ifstream fin;
@@ -396,13 +434,11 @@ int main()
 {
 	vector <Mission*> test;
 	Mission* temp = 0;
-	//test.push_back(new Dive(point(0, 0 ,0)));
-	//test.push_back(new Dive(test[test.size() - 1]->get_end_point()));
 
 	fout.open("Test Mission.txt");
 	string command = "";
 
-	while (command != "exit")
+	while (command != "Exit")
 	{
 		cout << "List of avaliable commands:" << endl
 			<< "1. New (adds a new step into the sequence)" << endl
@@ -469,12 +505,13 @@ int main()
 		}
 		else if (command == "Log")
 		{
+			fout.open("Test Mission.txt");
 			for (int i = 0; i < test.size(); i++)
 			{
 				fout << to_string(i) + ". " + test[i]->who_are_you() << endl;
 			}
-			fout.flush();
-			fout.clear();
+			//fout.flush();
+			fout.close();
 		}
 		else if (command == "Print")
 		{
@@ -485,7 +522,8 @@ int main()
 		}
 		cout << endl << endl;
 	}
-
+	if (test[test.size()]->who_are_you() != "Return")
+	fout.open("Test Mission.txt");
 	for (int i = 0; i < test.size(); i++)
 	{
 		fout << to_string(i) + ". " + test[i]->who_are_you() << endl;
