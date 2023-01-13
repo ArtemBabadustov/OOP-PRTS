@@ -30,7 +30,9 @@ struct point
    
     void operator = (const point* other);
 
-    int get_coordinate(std::string coordinate);
+    bool operator == (const point* other);
+
+    int get_coordinate(std::string coordinate) const;
    
 private:
     int x;

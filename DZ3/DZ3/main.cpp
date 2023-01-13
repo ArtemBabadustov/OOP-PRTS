@@ -49,7 +49,20 @@ void point::operator = (const point* other)
 	this->y = other->y;
 	this->z = other->z;
 }
-int point::get_coordinate(string coordinate)
+bool point::operator == (const point* other)
+{
+	if (this->get_coordinate("x") != other->get_coordinate("x") || this->get_coordinate("y") != other->get_coordinate("y")
+		|| this->get_coordinate("z") != other->get_coordinate("z"))
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
+int point::get_coordinate(string coordinate) const
 {
 	//cout << "get_coordiate is called" << endl;
 	if (coordinate == "x")
@@ -230,7 +243,7 @@ void Lift::get_depth(point n_start)
 	cout << "List of avaliable types of depth definition:" << endl
 		<< "1. Using depth sensor" << endl
 		<< "2. Using echo-sounder" << endl
-		<< "Please enter desired type(depth_sensor\echo_sounder)" << endl;
+		<< "Please enter desired type(depth_sensor/echo_sounder)" << endl;
 	cin >> type_of_depth_def;
 	cout << endl;
 	while (type_of_depth_def != "depth_sensor" && type_of_depth_def != "echo_sounder")
@@ -249,7 +262,8 @@ void Lift::get_depth(point n_start)
 	cout << "please enter desired depth" << endl;
 	this->get_int(depth);
 	cout << endl;
-	while (depth > max_y || depth < min_y || depth > n_start.get_coordinate("y"))
+	cout << "Check point 1" << endl;
+	while (depth > max_y || depth < min_y || depth < n_start.get_coordinate("y"))
 	{
 		if (depth > max_y || depth < min_y)
 		{
@@ -268,8 +282,11 @@ void Lift::get_depth(point n_start)
 			cout << endl;
 		}
 	}
+	cout << "Check point 2" << endl;
 	n_start.change_y(depth);
+	cout << "Check point 3" << endl;
 	this->end = n_start;
+	cout << "Check point 4" << endl;
 }
 Lift::Lift(point n_start)
 {
@@ -313,7 +330,7 @@ Lift::Lift(point n_start)
 	this->type_of_ascend = type;
 	this->start = n_start;
 	get_depth(n_start);
-	this->name = "Dive";
+	this->name = "Lift";
 }
 string Lift::who_are_you()
 {
@@ -424,7 +441,7 @@ Return::Return(point n_start)
 }
 string Return::who_are_you()
 {
-	return "Return to the start point.";
+	return "Return to the starting point.";
 }
 
 ofstream fout;
@@ -435,7 +452,7 @@ int main()
 	vector <Mission*> test;
 	Mission* temp = 0;
 
-	fout.open("Test Mission.txt");
+	//fout.open("Test Mission.txt");
 	string command = "";
 
 	while (command != "Exit")
@@ -454,15 +471,17 @@ int main()
 				<< "1. Dive (Descend to given depth)" << endl
 				<< "2. Lift (Ascend to given depth)" << endl
 				<< "3. Move (Move to given coordinates)" << endl
+				<< "4. Return (Return to the starting point with coordinates [0,0,0])" << endl
 				<< "Please enter one of the missions listed above:" << endl;
 			cin >> type_of_mission;
-			while (type_of_mission != "Dive" && type_of_mission != "Lift" && type_of_mission != "Move")
+			while (type_of_mission != "Dive" && type_of_mission != "Lift" && type_of_mission != "Move" && type_of_mission != "Return")
 			{
 				cout << "You have entered an incorrect type of mission!" << endl
 					<< "List of avaliable inputs:" << endl
 					<< "Dive" << endl
 					<< "Lift" << endl
 					<< "Move" << endl
+					<< "Return" << endl
 					<< "Please enter one of the missions listed above: " << endl;
 				cin >> type_of_mission;
 				cout << endl;
@@ -483,8 +502,7 @@ int main()
 				if (test.size() == 0)
 				{
 					cout << "Now you are at the starting point with coordinates (0,0,0). You can't lift!" << endl;
-					//test.push_back(new Lift(point(0, 0, 0)));
-					break;
+					//break;
 				}
 				else
 				{
@@ -520,15 +538,36 @@ int main()
 				cout << to_string(i) + ". " + test[i]->who_are_you() << endl;
 			}
 		}
+		else if (command == "Return")
+		{
+			if (test.size() == 0)
+			{
+				cout << "You are at the starting point. You cant return!" << endl;
+			}
+			else if (test[test.size() - 1]->get_end_point() == &point(0, 0, 0))
+			{
+				cout << "You are at the starting point. You cant return!" << endl;
+			}
+			else
+			{
+				test.push_back(new Return(test[test.size() - 1]->get_end_point()));
+			}
+		}
 		cout << endl << endl;
 	}
-	if (test[test.size()]->who_are_you() != "Return")
-	fout.open("Test Mission.txt");
-	for (int i = 0; i < test.size(); i++)
+	if (test.size() != 0)
 	{
-		fout << to_string(i) + ". " + test[i]->who_are_you() << endl;
+		if (test[test.size() - 1]->who_are_you() != "Return")
+		{
+			test.push_back(new Return(test[test.size() - 1]->get_end_point()));
+		}
+		fout.open("Test Mission.txt");
+		for (int i = 0; i < test.size(); i++)
+		{
+			fout << to_string(i) + ". " + test[i]->who_are_you() << endl;
+		}
+		fout.close();
 	}
-	fout.close();
 	return 0;
 }
 
